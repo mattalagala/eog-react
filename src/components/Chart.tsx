@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useSubscription } from 'urql';
-import { Line, LineChart, XAxis, YAxis, Tooltip, Label } from 'recharts';
-import ChartIndicator from '../components/ChartIndicator';
+import { Line, LineChart, XAxis, YAxis, Tooltip, Label, Legend } from 'recharts';
+import ChartIndicator from './ChartIndicator';
 
 const useStyles = makeStyles({
   root: {
@@ -36,38 +36,55 @@ let count = 0;
 function addTime() {
   const epochConv = new Date(newData.at);
   const test = epochConv.getTime();
-  console.log(test, 'this from add time');
 }
+
+const newQuery = `subscription newSub { 
+  newMeasurement{
+    metric
+    at
+    value
+    unit
+  }
+}`;
+
+// const handleSubscription = (test2: any = [], response: any) => {
+//   return [response.newMeasurement, ...test2];
+// };
 
 function Chart(props) {
   const classes = useStyles();
-  console.log(props.value, 'THIS IS VALUE FROM CHARTS');
+
   const metricName = props.value;
+  console.log(metricName, 'THIS IS VALUE FROM CHARTS');
+
+  const [result] = useSubscription(
+    {
+      query: newQuery,
+      variables: { metricName },
+    },
+    // handleSubscription,
+  );
+  const { data, fetching, error } = result;
+  let newArr = [] as any;
+  const testThisData = () => {
+    if (data) {
+      return data.newMeasurement;
+    }
+    if (fetching) return <p>Loading...</p>;
+    if (error) return <p>Oh no... {error.message}</p>;
+  };
+
+  const somethingElse = testThisData();
+
   const [psiData, setPsiData] = useState([newData]);
 
-  const newQuery = `query($metricName: String!){
-    getLastKnownMeasurement(metricName:$metricName){metric,at,value,unit}    
-    }`;
-
-  const [result, reexecuteQuery] = useQuery({
-    query: newQuery,
-    variables: { metricName },
-    pollInterval: 5000,
-    requestPolicy: 'cache-and-network',
-  });
-  const { data, fetching, error } = result;
-
-  console.log(result, 'THIS IS CONSOLE RESULT');
+  console.log(somethingElse, '------------ data ---------------');
 
   useEffect(() => {
-    count++;
-    // console.log(count, 'THIS IS useEffect')
-
-    // setPsiData([newData])
-    if (psiData.length >= 30) {
+    if (testData.length >= 25) {
       psiData.shift();
     }
-    setPsiData(psiData => [...psiData, newData]);
+    setPsiData(psiData => [...psiData, somethingElse]);
   }, [data]);
 
   useEffect(() => {
@@ -80,30 +97,34 @@ function Chart(props) {
 
   const time = new Date(1234567890);
   const newTime = time.getTime();
-  console.log(psiData);
-  if (fetching) return <p>Loading...</p>;
-  if (error) {
-    console.log(error.message);
-    return <p></p>;
-  }
-  if (data) {
-    newData = data.getLastKnownMeasurement;
-    newData.test1 = '233';
-    addTime();
-  }
 
-  const testData = psiData[psiData.length - 1]['value'];
+  addTime();
 
+  const testData = psiData
+    .filter(items => items.metric === metricName)
+    .map(items => {
+      const dt = new Date(parseInt(items.at) * 1000);
+      const hr = dt.getUTCHours();
+      const m = '0' + dt.getUTCMinutes();
+      const convTime = hr + ':' + m.substr(-2);
+      items.at = convTime;
+      console.log(convTime, '----------strLoc ------------');
+      return items;
+    });
+  console.log(psiData, 'THIS IS !!!!!!!!!!psiData!!!!!!!!!!!!!');
+
+  const test = metricName !== 'test';
+  console.log(testData[testData.length - 1], 'THIS IS !!!!!!!!!!testData!!!!!!!!!!!!!');
+  const newValue = testData[testData.length - 1];
   return (
     <div>
-      <ChartIndicator props={[metricName, testData]} />
+      {test && <ChartIndicator props={[metricName]} />}
+
       <div className={classes.root}>
-        <LineChart height={640} width={1280} margin={{ top: 20, right: 30, left: 0, bottom: 0 }} data={psiData}>
-          <XAxis dataKey="at">
-            <Label value="time" offset={0} position="insideLeft" />
-          </XAxis>
-          <YAxis label="test" />
-          <Line dataKey="value" />
+        <LineChart height={640} width={1280} margin={{ top: 20, right: 30, left: 20, bottom: 30 }} data={testData}>
+          <XAxis dataKey="at" label={{ value: 'Time', position: 'bottom' }} />
+          <YAxis />
+          <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
           <Tooltip />
         </LineChart>
       </div>
