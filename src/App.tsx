@@ -25,6 +25,8 @@ const theme = createMuiTheme({
 });
 
 const App = () => (
+  //Removed NowWhat component.
+
   <MuiThemeProvider theme={theme}>
     <CssBaseline />
     <Provider store={store}>
