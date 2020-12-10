@@ -5,6 +5,7 @@ import { SubscriptionClient } from 'subscriptions-transport-ws';
 
 const subscriptionClient = new SubscriptionClient('ws://react.eogresources.com/graphql', {});
 
+//WebSocket Client for Chart Subscription
 const client = createClient({
   url: 'ws://react.eogresources.com/graphql',
   exchanges: [
@@ -12,7 +13,7 @@ const client = createClient({
     subscriptionExchange({ forwardSubscription: operation => subscriptionClient.request(operation) }),
   ],
 });
-
+// Passing user selection to Chart as props
 const ChartContainer = ({ value }) => (
   <Provider value={client}>
     <Chart value={value} />
