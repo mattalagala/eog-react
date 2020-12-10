@@ -37,7 +37,7 @@ function Metrics() {
     query: metrics,
   });
   const [newMetric, setNewMetric] = useState({
-    value: 'null',
+    value: 'test',
   });
 
   console.log(newMetric.value, 'this is new Metric');
