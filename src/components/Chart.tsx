@@ -4,6 +4,7 @@ import { useSubscription } from 'urql';
 import { Line, LineChart, XAxis, YAxis, Tooltip } from 'recharts';
 import ChartIndicator from './ChartIndicator';
 
+// Define styles for this component. Chose to set styles locally instead of globally.
 const useStyles = makeStyles({
   root: {
     width: 1280,
@@ -29,12 +30,7 @@ const useStyles = makeStyles({
   },
 });
 
-let newData: any = {};
-
-function addTime() {
-  const epochConv = new Date(newData.at);
-  const test = epochConv.getTime();
-}
+let newData: any = { value: 'initial' };
 
 const newQuery = `subscription newSub { 
   newMeasurement{
@@ -76,8 +72,12 @@ function Chart(props) {
 
   // Subscription useEffect
   useEffect(() => {
-    // Keeps iterrable array at length 30 so that data can be readable
+    // Keeps iterrable array at length 30 so that data is readable
     if (testData.length >= 30) {
+      testData.shift();
+    }
+
+    if (psiData.length >= 300) {
       psiData.shift();
     }
     // Set state when data (subscription) changes
@@ -86,18 +86,13 @@ function Chart(props) {
 
   // Conditional useEffect to set empty array when no selection has been made
   useEffect(() => {
-    if (metricName === 'test') {
-      console.log(metricName, 'THIS IS INITIAL VALUE');
+    if (metricName === 'initial') {
     } else {
       setPsiData(psiData => [(psiData = [])]);
     }
   }, [metricName]);
 
-  const time = new Date(1234567890);
-  const newTime = time.getTime();
-
-  addTime();
-
+  // State parsed into an array and time converted to UTC
   const testData = psiData
     .filter(items => items.metric === metricName)
     .map(items => {
@@ -106,17 +101,13 @@ function Chart(props) {
       const m = '0' + dt.getUTCMinutes();
       const convTime = hr + ':' + m.substr(-2);
       items.at = convTime;
-      console.log(convTime, '----------strLoc ------------');
       return items;
     });
-  console.log(psiData, 'THIS IS !!!!!!!!!!psiData!!!!!!!!!!!!!');
 
-  const test = metricName !== 'test';
-  console.log(testData[testData.length - 1], 'THIS IS !!!!!!!!!!testData!!!!!!!!!!!!!');
   const newValue = testData[testData.length - 1];
   return (
     <div>
-      {test && <ChartIndicator props={[metricName]} />}
+      <ChartIndicator props={[metricName]} />
 
       <div className={classes.root}>
         <LineChart height={640} width={1280} margin={{ top: 20, right: 30, left: 20, bottom: 30 }} data={testData}>
