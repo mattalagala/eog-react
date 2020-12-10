@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery, useSubscription } from 'urql';
-import { Line, LineChart, XAxis, YAxis, Tooltip, Label, Legend } from 'recharts';
+import { useSubscription } from 'urql';
+import { Line, LineChart, XAxis, YAxis, Tooltip } from 'recharts';
 import ChartIndicator from './ChartIndicator';
 
 const useStyles = makeStyles({
@@ -31,8 +31,6 @@ const useStyles = makeStyles({
 
 let newData: any = {};
 
-let count = 0;
-
 function addTime() {
   const epochConv = new Date(newData.at);
   const test = epochConv.getTime();
@@ -47,25 +45,21 @@ const newQuery = `subscription newSub {
   }
 }`;
 
-// const handleSubscription = (test2: any = [], response: any) => {
-//   return [response.newMeasurement, ...test2];
-// };
-
 function Chart(props) {
+  // Classes variable for useStyles
   const classes = useStyles();
 
   const metricName = props.value;
-  console.log(metricName, 'THIS IS VALUE FROM CHARTS');
 
-  const [result] = useSubscription(
-    {
-      query: newQuery,
-      variables: { metricName },
-    },
-    // handleSubscription,
-  );
+  // Subscription function passed in query and user input from Select
+  const [result] = useSubscription({
+    query: newQuery,
+    variables: { metricName },
+  });
+
+  // Immutable object data.result
+
   const { data, fetching, error } = result;
-  let newArr = [] as any;
   const testThisData = () => {
     if (data) {
       return data.newMeasurement;
@@ -74,19 +68,23 @@ function Chart(props) {
     if (error) return <p>Oh no... {error.message}</p>;
   };
 
-  const somethingElse = testThisData();
+  // Used a function call because useEffect can't come after a conditional
+  const subscriptionData = testThisData();
 
+  // State Hook
   const [psiData, setPsiData] = useState([newData]);
 
-  console.log(somethingElse, '------------ data ---------------');
-
+  // Subscription useEffect
   useEffect(() => {
-    if (testData.length >= 25) {
+    // Keeps iterrable array at length 30 so that data can be readable
+    if (testData.length >= 30) {
       psiData.shift();
     }
-    setPsiData(psiData => [...psiData, somethingElse]);
+    // Set state when data (subscription) changes
+    setPsiData(psiData => [...psiData, subscriptionData]);
   }, [data]);
 
+  // Conditional useEffect to set empty array when no selection has been made
   useEffect(() => {
     if (metricName === 'test') {
       console.log(metricName, 'THIS IS INITIAL VALUE');
