@@ -104,11 +104,9 @@ function Chart(props) {
       return items;
     });
 
-  const newValue = testData[testData.length - 1];
   return (
     <div>
       <ChartIndicator props={[metricName]} />
-
       <div className={classes.root}>
         <LineChart height={640} width={1280} margin={{ top: 20, right: 30, left: 20, bottom: 30 }} data={testData}>
           <XAxis dataKey="at" label={{ value: 'Time', position: 'bottom' }} />
