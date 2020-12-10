@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'urql';
 import { makeStyles } from '@material-ui/core/styles';
 import ChartContainer from './ChartContainer';
@@ -33,11 +33,11 @@ const useStyles = makeStyles({
 
 function Metrics() {
   const classes = useStyles();
-  const [result, reexecuteQuery] = useQuery({
+  const [result] = useQuery({
     query: metrics,
   });
   const [newMetric, setNewMetric] = useState({
-    value: 'test',
+    value: 'Please Select a Metric Above',
   });
 
   console.log(newMetric.value, 'this is new Metric');
