@@ -42,19 +42,18 @@ function Metrics() {
   });
 
   // Drop down data with initial value as state
-  const [newMetric, setNewMetric] = useState({
+  const [newMetrics, setNewMetrics] = useState({
     value: 'Please Select a Metric Above',
   });
 
   // Select onChange function to set state for chart render
   const changeFunction = (e: any) => {
     const newValue = e.target.value;
-    setNewMetric({ value: newValue });
+    setNewMetrics({ value: newValue });
   };
 
   const { data, fetching, error } = result;
   if (data) {
-    return data;
   }
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Oh no... {error.message}</p>;
@@ -74,7 +73,7 @@ function Metrics() {
           ))}
         </select>
       </div>
-      <ChartContainer {...newMetric} />
+      <ChartContainer {...newMetrics} />
     </div>
   );
 }
