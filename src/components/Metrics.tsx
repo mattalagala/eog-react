@@ -43,8 +43,6 @@ function Metrics() {
   console.log(newMetric.value, 'this is new Metric');
 
   const changeFunction = e => {
-    console.log(e.target.value, 'This is target value@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log(e.target, 'This is target value!!!!!!!!!!!!!!!!!!!!!!!!!!');
     const newValue = e.target.value;
     setNewMetric({ value: newValue });
   };
