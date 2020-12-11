@@ -104,24 +104,21 @@ function Chart(props) {
       return items;
     });
 
-  const reducer = (accumulator, currentValue) => currentValue;
+  const [metricValueProp, setMetricValueProp] = useState(newData);
 
   const filteredValue = filteredMetricData.map(item => item.value);
 
-  const [metricValueProp, setMetricValueProp] = useState(newData);
-
-  // Subscription useEffect
+  // For ChartIndicator value
   useEffect(() => {
     // Keeps iterrable array at length 30 so that data is readable
-    if (filteredValue.length >= 30) {
-      filteredMetricData.shift();
+    if (filteredValue.length >= 1) {
+      filteredValue.shift();
     }
     const updateValue = filteredValue[filteredValue.length - 1];
-    // Set state when data (subscription) changes
+    // Set state value for ChartIndicator
     setMetricValueProp(metricValueProp => [metricValueProp, updateValue]);
   }, [data]);
 
-  console.log(metricValueProp, '___________ metricValueProp_______________');
   return (
     <div>
       <ChartIndicator props={[metricName, metricValueProp]} />
@@ -132,8 +129,8 @@ function Chart(props) {
           margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
           data={filteredMetricData}
         >
-          <XAxis dataKey="at" label={{ value: 'Time', position: 'bottom' }} />
-          <YAxis />
+          <XAxis dataKey="at" label={{ value: 'Time', position: 'bottom' }} stroke="#0099ff" strokeWidth={2} />
+          <YAxis stroke="#0099ff" strokeWidth={2} />
           <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
           <Tooltip />
         </LineChart>
