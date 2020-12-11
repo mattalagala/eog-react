@@ -6,21 +6,18 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
   root: {
-    minWidth: 275,
-    maxWidth: 300,
-    backgroundColor: 'white',
-    marginTop: 15,
-    marginLeft: 15,
-    display: 'flex',
-  },
-  div: {
     display: 'flex',
     flexDirection: 'row-reverse',
     margin: '0 2px',
     transform: 'scale(0.8)',
   },
-  title: {
-    fontSize: 14,
+  card: {
+    minWidth: 275,
+    maxWidth: 300,
+    marginTop: 15,
+    marginLeft: 15,
+    display: 'flex',
+    borderRadius: 10,
   },
   pos: {
     marginBottom: 12,
@@ -30,14 +27,14 @@ const useStyles = makeStyles({
 export default function ChartIndicator({ props }) {
   const classes = useStyles();
   return (
-    <div className={classes.div}>
-      <Card className={classes.root}>
+    <div className={classes.root}>
+      <Card className={classes.card}>
         <CardContent>
           <Typography variant="h5" component="h2">
             {props[0]}
           </Typography>
-          <Typography variant="h5" component="h2">
-            {props[1]}
+          <Typography variant="h2" component="h2">
+            {props[1][props.length - 1]}
           </Typography>
         </CardContent>
       </Card>
